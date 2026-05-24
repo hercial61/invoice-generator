@@ -5,11 +5,7 @@ import { Resend } from "resend"
 import { db } from "@/lib/db"
 import * as schema from "@/lib/db/schema"
 
-type Auth = ReturnType<typeof betterAuth>
-
-let _auth: Auth | undefined
-
-function createAuth(): Auth {
+function createAuth() {
   const resend = new Resend(process.env.RESEND_API_KEY!)
   return betterAuth({
     baseURL: process.env.NEXT_PUBLIC_APP_URL!,
@@ -37,6 +33,10 @@ function createAuth(): Auth {
     ],
   })
 }
+
+type Auth = ReturnType<typeof createAuth>
+
+let _auth: Auth | undefined
 
 // Lazy singleton — defers initialization so Next.js build-time static
 // analysis doesn't fail when runtime env vars aren't present.
