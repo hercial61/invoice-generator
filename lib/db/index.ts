@@ -17,6 +17,6 @@ export const db = new Proxy({} as Db, {
       }),
       { schema }
     )
-    return (_db as Record<string | symbol, unknown>)[prop]
+    return (_db as unknown as Record<string | symbol, unknown>)[prop]
   },
 })
