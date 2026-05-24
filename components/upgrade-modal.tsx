@@ -8,7 +8,7 @@ export function UpgradeModal({ onClose }: { onClose: () => void }) {
   async function handleUpgrade() {
     setLoading(true)
     try {
-      const res = await fetch("/api/stripe/checkout", { method: "POST" })
+      const res = await fetch("/api/ls/checkout", { method: "POST" })
       const data = await res.json()
       if (data.url) window.location.href = data.url
     } finally {
