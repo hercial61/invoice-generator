@@ -4,6 +4,8 @@ import Link from "next/link"
 import { auth } from "@/lib/auth"
 import { SignOutButton } from "@/components/sign-out-button"
 
+export const dynamic = "force-dynamic"
+
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await auth.api.getSession({ headers: await headers() })
   if (!session) redirect("/sign-in")
