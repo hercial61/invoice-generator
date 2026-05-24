@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { nanoid } from "nanoid"
+import { UpgradeModal } from "@/components/upgrade-modal"
 
 type LineItem = { id: string; description: string; quantity: string; unitPrice: string; improving: boolean }
 
@@ -39,6 +40,7 @@ export default function NewInvoicePage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
+  const [showUpgrade, setShowUpgrade] = useState(false)
 
   const [invoiceNumber, setInvoiceNumber] = useState("")
   const [issueDate, setIssueDate] = useState(today())
@@ -115,6 +117,10 @@ export default function NewInvoicePage() {
             })),
         }),
       })
+      if (res.status === 402) {
+        setShowUpgrade(true)
+        return
+      }
       if (!res.ok) {
         const data = await res.json()
         setError(data.error || "Failed to save invoice")
@@ -133,6 +139,7 @@ export default function NewInvoicePage() {
 
   return (
     <div className="flex flex-col h-full">
+      {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
       <div className="flex items-center justify-between border-b border-zinc-200 px-6 py-3">
         <Link href="/invoices" className="text-sm text-zinc-500 hover:text-zinc-700 transition-colors">
           ← Invoices

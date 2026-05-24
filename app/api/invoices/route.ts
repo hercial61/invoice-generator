@@ -7,6 +7,7 @@ import { db } from "@/lib/db"
 import { invoices, invoiceItems } from "@/lib/db/schema"
 import { eq, desc } from "drizzle-orm"
 import { nanoid } from "nanoid"
+import { checkCanCreateInvoice, incrementInvoiceCount } from "@/lib/usage"
 
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() })
@@ -30,6 +31,14 @@ export async function POST(request: NextRequest) {
     body = await request.json()
   } catch {
     return NextResponse.json({ error: "invalid_request" }, { status: 400 })
+  }
+
+  const usage = await checkCanCreateInvoice(session.user.id)
+  if (!usage.allowed) {
+    return NextResponse.json(
+      { error: "limit_reached", count: usage.count, limit: usage.limit },
+      { status: 402 }
+    )
   }
 
   const invoiceId = nanoid()
@@ -78,6 +87,8 @@ export async function POST(request: NextRequest) {
       })),
     )
   }
+
+  await incrementInvoiceCount(session.user.id)
 
   return NextResponse.json({ invoice }, { status: 201 })
 }

@@ -71,6 +71,20 @@ export const invoices = sqliteTable("invoices", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 })
 
+export const userPlans = sqliteTable("user_plans", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" })
+    .unique(),
+  tier: text("tier", { enum: ["free", "pro"] }).notNull().default("free"),
+  stripeCustomerId: text("stripe_customer_id"),
+  stripeSubscriptionId: text("stripe_subscription_id"),
+  invoicesThisMonth: integer("invoices_this_month").notNull().default(0),
+  periodStart: integer("period_start", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull().$defaultFn(() => new Date()).$onUpdate(() => new Date()),
+})
+
 export const invoiceItems = sqliteTable("invoice_items", {
   id: text("id").primaryKey(),
   invoiceId: text("invoice_id")
